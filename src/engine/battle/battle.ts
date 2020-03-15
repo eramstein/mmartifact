@@ -1,7 +1,7 @@
 import { Unit, newUnit } from "./unit";
 import { DataUnits } from "../../data/units";
 import { REGION_COLUMNS, REGION_LINES } from "./board";
-import { Tower, TOWER_HP, TOWER_GOLD_INIT } from "./tower";
+import { Tower, TOWER_HP, TOWER_GOLD_INIT, initTowers } from "./tower";
 
 export interface BattleState {
     turn: number,
@@ -11,6 +11,7 @@ export interface BattleState {
     foePassed: boolean,
     player: PlayerState,
     foe: PlayerState,
+    winState: WinState,
 }
 
 export interface PlayerState {
@@ -19,6 +20,11 @@ export interface PlayerState {
     towers: Tower[],
 }
 
+export enum WinState {
+    Playing = "PLAYING",
+    Won = "WON",
+    Lost = "LOST",
+}
 
 export function initBattleState() : BattleState {
     const playerBoardUnits = [DataUnits.Bob].map(newUnit);
@@ -42,11 +48,7 @@ export function initBattleState() : BattleState {
             column: i % REGION_COLUMNS,
         };
         foeBoard.push(u);
-    });
-
-    function initTowers() {
-        return Array(3).fill(0).map(e => { return { hp: TOWER_HP[0], destroyed: false, gold: TOWER_GOLD_INIT, goldMax: TOWER_GOLD_INIT } });
-    } 
+    });    
 
     return {
         turn: 0,
@@ -57,12 +59,13 @@ export function initBattleState() : BattleState {
         player: {
             board : playerBoard,
             hand : [],
-            towers: initTowers(),
+            towers: initTowers(true),
         },
         foe: {
             board : foeBoard,
             hand : [],
-            towers: initTowers(),
+            towers: initTowers(false),
         },
+        winState: WinState.Playing,
     }
 }

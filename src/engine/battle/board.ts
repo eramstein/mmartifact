@@ -36,3 +36,22 @@ export function getUnitAtPosition(gs : GameState, pos : BoardPosition) : Unit {
     }
     return null;
 }
+
+export function isBlocked(gs : GameState, attacker : Unit, defender? : Unit) : boolean {
+    const ennemies = attacker.owned ? gs.battle.foe.board : gs.battle.player.board;
+    const ennemiesMelee = ennemies.filter(e =>
+        e.pos.region === attacker.pos.region &&
+        e.pos.column === attacker.pos.column &&
+        e.pos.line !== 0 && e.pos.line !== REGION_LINES - 1
+    );
+    const ennemiesRange = ennemies.filter(e =>
+        e.pos.region === attacker.pos.region &&
+        e.pos.column === attacker.pos.column &&
+        (e.pos.line === 0 || e.pos.line === REGION_LINES - 1)
+    );    
+    if (defender) {
+        return ennemiesMelee.length > 0;
+    } else {
+        return ennemiesMelee.length + ennemiesRange.length > 0;
+    }
+}

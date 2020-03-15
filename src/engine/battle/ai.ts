@@ -17,16 +17,15 @@ export function playAiAbility(gs : GameState, unit : Unit, ability : Ability) {
     if (!ability.target || ability.target.count <= targets.length) {
         playAbility(gs, unit, ability, targets);
     } else {
-        nextRound(gs);
+        nextRound(gs, false);
     }    
 }
 
 export function playAiRound(gs : GameState) {
     console.log('playAiRound');    
-    if (isActionLeftForAI(gs) === false) {
+    if (isActionLeftForAI(gs) === false) {        
         gs.battle.foePassed = true;
-        nextRound(gs);
-        return;
+        nextRound(gs, true);
     }
     // TODO
     //playAiAbility(gs, unit, ability);

@@ -2,6 +2,7 @@ import { GameState } from "../game";
 import { Unit } from "./unit";
 import { TriggerType, getEligibleTargets } from "./ability";
 import { BoardPosition } from "./board";
+import { Tower } from "./tower";
 
 function triggerAbilities(gs : GameState, type : TriggerType, ...rest) {
     gs.battle.player.board.concat(gs.battle.foe.board).forEach(u => {
@@ -35,6 +36,10 @@ export function onDamageUnit(gs : GameState, unit : Unit, damage : number, isCom
 
 export function onCombatResolution(gs : GameState, attacker : Unit, defender : Unit) {
     triggerAbilities(gs, TriggerType.AfterCombat, attacker, defender);
+}
+
+export function onAttackTowerResolution(gs : GameState, attacker : Unit, tower : Tower) {
+    triggerAbilities(gs, TriggerType.AfterCombat, attacker, tower);
 }
 
 export function onMoveUnit(gs : GameState, unit : Unit, pos : BoardPosition) {

@@ -3,8 +3,6 @@
     import { REGION_COLUMNS, REGION_LINES } from '../../../engine/battle/board';
     
     export let tower;
-    export let i;
-    export let isPlayer;
     export let cellWidth;
     export let cellHeight;
     export let regionPadding;
@@ -39,12 +37,12 @@
 </style>
 
 <div class="tower-container"
-    on:click={() => State.clickTower(isPlayer, i)}
+    on:click={() => State.clickTower(tower)}
     style="
         top: 0px;
         width: {REGION_COLUMNS * cellWidth}px;
-        top: {isPlayer ? cellHeight * REGION_LINES + linePadding + 12 : 0}px;
-        left: {REGION_COLUMNS * cellWidth * i + i * regionPadding}px;
+        top: {tower.isPlayer ? cellHeight * REGION_LINES + linePadding + 12 : 0}px;
+        left: {REGION_COLUMNS * cellWidth * tower.pos + tower.pos * regionPadding}px;
     ">
     <div class="tower-gold">
         <div class="tower-gold-top">{tower.gold}</div>

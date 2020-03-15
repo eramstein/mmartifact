@@ -11,12 +11,13 @@ export interface Unit {
     owned?: boolean,
     exhausted?: boolean,
     pos?: BoardPosition,
+    cost: number,
 
     hp?: number,
     hpMax: number,
     atk: number,
-    armor: number,
-    retaliate: number,
+    armor?: number,
+    retaliate?: number,
     
     abilities: Ability[],
     travel?: boolean,

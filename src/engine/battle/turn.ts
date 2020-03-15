@@ -26,17 +26,41 @@ export function nextRound(gs : GameState, passed : boolean) {
         }
     }
 
-    checkWinState(gs);
-
     resetRoundBonuses(gs);
 
     gs.battle.round++;
     gs.battle.playersRound = !gs.battle.playersRound;    
     
-    if (!gs.battle.playersRound) {        
+    if (gs.battle.playersRound) {
+        if (isActionLeftForPlayer(gs) === false) {
+            pass(gs, true);
+        }        
+    } else {
         playAiRound(gs);
-        return;
     }
+}
+
+
+function isActionLeftForPlayer(gs : GameState) : boolean {
+    let actionLeft = false;
+    let maxGold = 0;
+    gs.battle.player.towers.forEach(t => {
+        if (t.gold > maxGold) {
+            maxGold = t.gold;
+        }
+    });
+    gs.battle.player.board.forEach(u => {
+        if (u.exhausted === false) {
+            actionLeft = true;
+        }
+    });
+    gs.battle.player.hand.forEach(u => {
+        if (u.cost <= maxGold) {
+            actionLeft = true;
+        }
+    });
+    
+    return actionLeft;
 }
 
 export function pass(gs : GameState, isPlayer : boolean) {
@@ -107,13 +131,4 @@ function updateTempEffects(unit : Unit, endOfRound : boolean) {
         unit.endOfTurn.damageShield = 0;
         unit.exhausted = false;
     }    
-}
-
-function checkWinState(gs : GameState) {
-    if (gs.battle.player.board.length === 0) {
-        console.log("YOU LOSE");        
-    }
-    if (gs.battle.foe.board.length === 0) {
-        console.log("YOU WIN");        
-    }
 }

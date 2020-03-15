@@ -2,13 +2,19 @@ import { UI } from "../../model";
 import { playAbility, TargetType } from "../../../engine/battle/ability";
 import { GameState } from "../../../engine/game";
 import { Unit } from "../../../engine/battle/unit";
+import { combat } from "../../../engine/battle/combat";
 import { clearAbilityUiState } from "./ability";
 
 export function clickBoardUnit(gs : GameState, ui : UI, unit : Unit) {    
     if (ui.targetSelectionMode) {
         targetUnit(gs, ui, unit);
     }
-    selectUnit(gs, ui, unit);
+    if (ui.selectedUnit && ui.selectedUnit.owned && !unit.owned) {
+        combat(gs, ui.selectedUnit, unit);
+        ui.selectedUnit = null;
+    } else {
+        selectUnit(gs, ui, unit);
+    }    
 }
 
 export function clickHandUnit(gs : GameState, ui : UI, unit : Unit) {    

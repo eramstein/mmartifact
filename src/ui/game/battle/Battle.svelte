@@ -71,9 +71,10 @@
         font-size: 26px;
         cursor: pointer;
         padding-top: 5px;
+        transition: 750ms ease-in-out;
     }
     .initiative-coin:hover {
-        background-color: #c46e27;
+        background-color: #c46e27;        
     }
     .passed {
         position: absolute;
@@ -92,8 +93,8 @@
             {/each}
         </div>
         <div class="tower-row">
-            {#each battle.foe.towers as tower,i }
-            <Tower tower={tower} i={i} isPlayer={false} cellWidth={CELL_WIDTH} cellHeight={CELL_HEIGHT} regionPadding={REGION_PADDING} linePadding={LINE_PADDING}>
+            {#each battle.foe.towers as tower }
+            <Tower tower={tower} cellWidth={CELL_WIDTH} cellHeight={CELL_HEIGHT} regionPadding={REGION_PADDING} linePadding={LINE_PADDING}>
             </Tower>
             {/each}
         </div>
@@ -128,8 +129,8 @@
             {/each}
         </div>
         <div class="tower-row">
-            {#each battle.player.towers as tower,i }
-            <Tower tower={tower} i={i} isPlayer={true} cellWidth={CELL_WIDTH} cellHeight={CELL_HEIGHT} regionPadding={REGION_PADDING} linePadding={LINE_PADDING}>
+            {#each battle.player.towers as tower }
+            <Tower tower={tower} cellWidth={CELL_WIDTH} cellHeight={CELL_HEIGHT} regionPadding={REGION_PADDING} linePadding={LINE_PADDING}>
             </Tower>
             {/each}
         </div>
