@@ -4,18 +4,14 @@
     import { State } from '../../../stores';
     import { DELAYS } from './config';
     import { TriggerType } from '../../../engine/battle/ability';
-    import { REGION_COLUMNS } from '../../../engine/battle/board';
     
     export let unit;
-    export let unitSize;
-    export let pending;
+    export let abilityPending;
     export let selected;
-    
-    let oldPositions = {};
 
     $: unitAbilities = unit.abilities;
-    
-    $: hpPercent = Math.floor(unit.hp / unit.hpMax * 100);
+
+    $: selected = $State.ui.selectedUnit && $State.ui.selectedUnit.id === unit.id;
 
     function isDisabled(ability) {
         return unit.cc.mezz > 0
@@ -25,23 +21,28 @@
     $: dotTurnValue = unit.endOfTurn.hot - unit.endOfTurn.dot;
     $: dotRoundValue = unit.endOfRound.hot - unit.endOfRound.dot;
 
-    $: left = ((unit.pos.region - 1) * REGION_COLUMNS + unit.pos.column) * (unitSize + 4) + unit.pos.region * 20;
-
 </script>
 
 <style>
     .unit {
-        position: absolute;
-        background-color: #f9f9f9;
-        height: 300px;
+        position: relative;
+        width: 100%;
+        height: 100%;
         border: 1px solid #ccc;
-        transition: left 750ms ease-in-out;
+    }
+    .unit-inner {
+        padding: 10px;
+        height: 90%;
     }
     .name {
         text-align: center;
         font-weight: bold;
-        margin: 10px 0px;
         cursor: pointer;
+    }
+    .abilities {
+        position: absolute;
+        width: 100%;
+        bottom: 35px;
     }
     .ability {
         position: relative;
@@ -56,49 +57,44 @@
     .ability button {
         width: 100%;
         border: none;
-        border-top: 1px solid #ccc;
-        border-bottom: 1px solid #ccc;
-        transition: background 2000ms ease-in-out;
+        border: 1px solid #ccc;
         margin: -1px 0px 0px 0px;
-        padding: 10px;
+        padding: 5px 10px;
     }
     .owned button:hover {
         cursor: pointer;
-        font-weight: bold;
+        background-color: #ddd;
     }
     .stats {
+        position: absolute;
+        width: 100%;
+        bottom: 0px;
         display: flex;
-        padding-bottom: 20px;
         align-items: center;
-        justify-content: center;
+        justify-content: space-between;
     }
-    .atk {
+    .stats div {
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 100px;
         width: 25px;
         height: 25px;
-        background-color: rgb(40, 72, 98);
         color: white;
-        margin-right: 10px;
+        margin: 5px;
+        font-size: 14px;
     }
-    .atk div {
-        padding-bottom: 2px;
+    .atk {
+        background-color: rgb(40, 72, 98);
     }
     .hp {
-        height: 25px;
-        width: 120px;
-        border: 1px solid #ccc;
-        position: relative;
+        background-color: rgb(117, 33, 7);
     }
-    .hpBar {
-        position: absolute;
-        height: 100%;
-        background-color: rgb(243, 71, 71);
-        text-align: center;
-        font-weight: bold;
-        transition: all 250ms ease-out;
+    .armor {
+        background-color: rgb(71, 71, 70);
+    }
+    .retaliate {
+        background-color: rgb(233, 25, 70);
     }
     .cc {
         position: absolute;
@@ -110,9 +106,12 @@
     }
 </style>
 
-<div class="unit" style="left: {left}px;border-width: {selected ? '2px' : '1px'}">
-    <div style="width: {unitSize}px">
-        <div class="name" on:click={() => State.clickBoardUnit(unit)}>
+<div class="unit" style="
+    background-color: {unit.exhausted ? '#ddd' : '#f9f9f9'};
+    border-color: {selected ? 'blue' : '#ccc'};
+    ">
+    <div class="unit-inner" on:click={() => State.clickBoardUnit(unit)}>
+        <div class="name">
             {unit.name}
         </div>
         {#if unit.cc.mezz > 0}
@@ -135,34 +134,42 @@
                 {dotTurnValue} HP
             </div>
         {/if}
-        <div class="stats">
-            <div class="atk">
-                <div>{unit.atk}</div>                
-            </div>
-            <div class="hp">
-                <div class="hpBar" style="width: {hpPercent}%;transition-delay: {unit.owned ? DELAYS.HP : DELAYS.HP}ms">
-                    {unit.hp}/{unit.hpMax}
-                </div>
-            </div>
-        </div>
-        <div class="abilities">
-        {#each unitAbilities as ability (ability.name) }
-            {#if ability.trigger.type === TriggerType.Activated}
-                <div class='{unit.owned ? "ability owned": "ability"}' title="{ability.text}">
-                    <button
-                        on:click={() => State.activateAbility(unit, null, ability)}
-                        style="font-weight: {pending && ability.name === pending.ability.name && unit.id === pending.unit.id ? 'bold' : null}"
-                        disabled="{isDisabled(ability)}">
-                        {ability.name}
-                    </button>
-                </div>
-            {/if}
-            {#if ability.trigger.type !== TriggerType.Activated}
-                <div class="ability-passive" title="{ability.text}">
+    </div>
+    <div class="abilities">
+    {#each unitAbilities as ability (ability.name) }
+        {#if ability.trigger.type === TriggerType.Activated && unit.owned}
+            <div class='ability owned' title="{ability.text}">
+                <button
+                    on:click={() => State.activateAbility(unit, ability)}
+                    style="font-weight: {abilityPending && ability.name === abilityPending.ability.name && unit.id === abilityPending.unit.id ? 'bold' : null}"
+                    disabled="{isDisabled(ability)}">
                     {ability.name}
-                </div>
-            {/if}
-        {/each}
+                </button>
+            </div>
+        {/if}
+        {#if ability.trigger.type !== TriggerType.Activated || !unit.owned}
+            <div class="ability-passive" title="{ability.text}">
+                {ability.name}
+            </div>
+        {/if}
+    {/each}
+    </div>
+    <div class="stats">
+        <div class="atk">
+            {unit.atk}
         </div>
-    </div>    
+        {#if unit.armor !== 0}
+        <div class="armor">
+            {unit.armor}
+        </div>
+        {/if}
+        {#if unit.armor !== 0}
+        <div class="retaliate">
+            {unit.retaliate}
+        </div>
+        {/if}
+        <div class="hp" title="{unit.hp}/{unit.hpMax}">
+            {unit.hp}
+        </div>
+    </div>
 </div>

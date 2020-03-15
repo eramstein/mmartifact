@@ -1,22 +1,30 @@
 import { Ability, newAbility, TriggerType } from "./ability";
 import { GameState } from "../game";
 import { onDamageUnit, onMoveUnit, onUnitDeath } from "./listeners";
-import { BoardPosition } from "./board";
+import { BoardPosition, isPosOnCurrentPlayerSide } from "./board";
+import { nextRound } from "./turn";
 
 export interface Unit {
+
     id?: string,
     name: string,
     owned?: boolean,
+    exhausted?: boolean,
+    pos?: BoardPosition,
+
     hp?: number,
     hpMax: number,
     atk: number,
-    pos?: BoardPosition,
-    queueTime?: number,
+    armor: number,
+    retaliate: number,
+    
     abilities: Ability[],
+    travel?: boolean,
+
     endOfRound?: TemporaryEffects,
     endOfTurn?: TemporaryEffects,
-    cc?: CrowdControl,
-    exhausted?: boolean,
+    cc?: CrowdControl,   
+
 }
 
 export interface TemporaryEffects {
@@ -54,7 +62,11 @@ export const defaultCrowdControl = () => {
 
 export function newUnit(template : Unit) : Unit {
     return {
+        armor: 0,
+        retaliate: 0,
+
         ...template,
+
         abilities: template.abilities.map(newAbility),
         id: Math.random() + "",
         endOfRound: defaultTempEffects(),
@@ -91,20 +103,27 @@ export function stunUnit(gs : GameState, unit : Unit, value : number) {
     unit.cc.stun += value;
 }
 
-export function dazeUnit(gs : GameState, unit : Unit) {        
-    unit.cc.dazed = true;
-}
-
-export function delayUnit(gs : GameState, unit : Unit, value : number) {
-    if (unit.queueTime) {
-        unit.queueTime += value;
-    }    
+export function isCurrentPlayerUnit(gs : GameState, unit : Unit) : boolean {
+    return gs.battle.playersRound && unit.owned || !gs.battle.playersRound && !unit.owned;
 }
 
 export function moveUnit(gs : GameState, unit : Unit, pos : BoardPosition) {
+
+    if (isCurrentPlayerUnit(gs, unit) === false ||
+        isPosOnCurrentPlayerSide(gs, pos) === false ||
+        unit.pos.region !== pos.region && !unit.travel ||
+        unit.exhausted
+        ) {
+        console.log("can't move here", unit, pos);        
+        return false;
+    }
+
     unit.pos = pos;
+    unit.exhausted = true;
 
     onMoveUnit(gs, unit, pos);
+
+    nextRound(gs, false);
 }
 
 export function destroyUnit(gs : GameState, unit : Unit) {

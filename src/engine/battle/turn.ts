@@ -9,13 +9,22 @@ export function nextTurn(gs : GameState) {
     gs.battle.round = 1;
     gs.battle.playersRound = true;
     gs.battle.playerPassed = false;
+    gs.battle.foePassed = false;
 
     applyTurnEffects(gs);
     resetTurnEffects(gs);
 
 }
 
-export function nextRound(gs : GameState) {
+export function nextRound(gs : GameState, passed : boolean) {
+
+    if (passed === false) {
+        if (gs.battle.playersRound) {
+            gs.battle.playerPassed = false;
+        } else {
+            gs.battle.foePassed = false;
+        }
+    }
 
     checkWinState(gs);
 
@@ -41,7 +50,7 @@ export function pass(gs : GameState, isPlayer : boolean) {
         nextTurn(gs);
         return; 
     }
-    nextRound(gs);
+    nextRound(gs, true);
 }
 
 function resetRoundBonuses(gs : GameState) {
@@ -58,6 +67,11 @@ function applyTurnEffects(gs : GameState) {
         if (u.endOfTurn.hot) {
             healUnit(gs, u, u.endOfTurn.hot);
         }
+    });
+    const towers = gs.battle.player.towers.concat(gs.battle.foe.towers);
+    towers.forEach(t => {
+        t.goldMax++;
+        t.gold = t.goldMax;
     });
 }
 
@@ -91,6 +105,7 @@ function updateTempEffects(unit : Unit, endOfRound : boolean) {
         }
         unit.endOfTurn.atk = 0;
         unit.endOfTurn.damageShield = 0;
+        unit.exhausted = false;
     }    
 }
 

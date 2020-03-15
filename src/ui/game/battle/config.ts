@@ -1,3 +1,4 @@
 export const DELAYS = {
-    HP: 300,
+    HP: 0,
+    UNIT_IN: 0,
 }

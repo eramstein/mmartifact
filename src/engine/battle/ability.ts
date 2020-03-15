@@ -53,7 +53,6 @@ export function playAbility(gs : GameState, unit : Unit, ability : Ability, targ
     // CHECKS + COSTS
     // ----------------------------------------------------------------------
     if (ccPreventsAbility(gs, unit)) {
-        if (!gs.battle.playersRound) { nextRound(gs); }
         return;
     }
 
@@ -62,7 +61,6 @@ export function playAbility(gs : GameState, unit : Unit, ability : Ability, targ
     }
 
     if (allTargetsEligible(gs, unit, ability, targets) === false) {
-        if (!gs.battle.playersRound) { nextRound(gs); }
         return;
     }
     
@@ -76,14 +74,8 @@ export function playAbility(gs : GameState, unit : Unit, ability : Ability, targ
 
     // NEXT ROUND
     // ----------------------------------------------------------------------
-    if (gs.battle.playersRound) {
-        gs.battle.playerPassed = false;
-    } else {
-        gs.battle.foePassed = false;
-    }
-
     if (!ability.fast) {
-        nextRound(gs);
+        nextRound(gs, false);
     }
     
 }

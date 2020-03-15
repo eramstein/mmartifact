@@ -1,6 +1,7 @@
 import { GameState } from "../game";
 import { Unit } from "./unit";
 
+export const REGION_COUNT = 3;
 export const REGION_LINES = 4;
 export const REGION_COLUMNS = 4;
 
@@ -8,6 +9,10 @@ export interface BoardPosition {
     region: number,
     line: number,
     column: number,
+}
+
+export function isPosOnCurrentPlayerSide(gs : GameState, pos : BoardPosition) : boolean {
+    return gs.battle.playersRound && pos.line >= REGION_LINES/2 || !gs.battle.playersRound && pos.line < REGION_LINES/2;
 }
 
 export function getFoesInRegion(gs : GameState, region : number) : Unit[] {

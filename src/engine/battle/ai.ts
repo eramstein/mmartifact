@@ -22,7 +22,9 @@ export function playAiAbility(gs : GameState, unit : Unit, ability : Ability) {
 }
 
 export function playAiRound(gs : GameState) {
+    console.log('playAiRound');    
     if (isActionLeftForAI(gs) === false) {
+        gs.battle.foePassed = true;
         nextRound(gs);
         return;
     }
@@ -32,5 +34,5 @@ export function playAiRound(gs : GameState) {
 
 function isActionLeftForAI(gs : GameState) : boolean {
     // TODO
-    return true;
+    return false;
 }

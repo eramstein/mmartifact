@@ -6,16 +6,24 @@ import { clearAbilityUiState } from "./ability";
 
 export function clickBoardUnit(gs : GameState, ui : UI, unit : Unit) {    
     if (ui.targetSelectionMode) {
-        selectUnit(gs, ui, unit);
+        targetUnit(gs, ui, unit);
     }
+    selectUnit(gs, ui, unit);
 }
 
 export function clickHandUnit(gs : GameState, ui : UI, unit : Unit) {    
-    console.log("Clicked unit", unit);
-    
+    console.log("Clicked unit", unit);    
 }
 
-function selectUnit(gs : GameState, ui : UI, unit : Unit) {    
+function selectUnit(gs : GameState, ui : UI, unit : Unit) {
+    if (ui.selectedUnit && ui.selectedUnit.id === unit.id) {
+        ui.selectedUnit = null;
+    } else {
+        ui.selectedUnit = unit;
+    }    
+}
+
+function targetUnit(gs : GameState, ui : UI, unit : Unit) {
     if ([TargetType.Ally, TargetType.Any].indexOf(ui.targetSelectionMode.type)>=0 && unit.owned ||
         [TargetType.Foe, TargetType.Any].indexOf(ui.targetSelectionMode.type)>=0 && !unit.owned) {
         ui.selectedTargets.push(unit);

@@ -15,6 +15,7 @@ export interface UI {
     },
     selectedTargets: Unit[],
     targetSelectionMode: Target,
+    selectedUnit: Unit,
 }
 
 export interface FullState {
