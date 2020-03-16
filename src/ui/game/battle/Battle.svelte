@@ -5,7 +5,7 @@
     import { DELAYS } from './config';
     import { REGION_COUNT, REGION_LINES, REGION_COLUMNS } from '../../../engine/battle/board';
     import Unit from './Unit.svelte';
-    import HandUnit from './HandUnit.svelte';
+    import HandCard from './HandCard.svelte';
     import Tower from './Tower.svelte';
     
     $: battle = $State.game.battle;
@@ -30,13 +30,12 @@
                 });
             }
         }
-    }   
+    }
 
 </script>
 
 <style>
     .battle {
-        display: flex;
         width: 100%;
         background-color: dimgray;
     }
@@ -54,7 +53,7 @@
     }
     .hand-row {
         display: flex;
-        padding: 20px 0px;
+        padding: 20px 100px;
     }
     .tower-row {
         position: relative;
@@ -64,17 +63,14 @@
         position: absolute;
         left: -75px;
         border-radius: 100px;
-        width: 50px;
-        height: 45px;
+        width: 55px;
+        height: 40px;
         background-color: #f3f3f3;
         text-align: center;
-        font-size: 26px;
+        font-size: 16px;
         cursor: pointer;
-        padding-top: 5px;
+        padding-top: 15px;
         transition: 750ms ease-in-out;
-    }
-    .initiative-coin:hover {
-        background-color: #c46e27;        
     }
     .passed {
         position: absolute;
@@ -83,15 +79,14 @@
     }
 </style>
 
-<div class="battle">    
-    <div class="board">
-        <div>Turn {battle.turn} Round {battle.round} {battle.playersRound ? 'Players Round' : ''}</div>
-        <div class="hand-row">
-            {#each battle.foe.hand as unit (unit.id) }
-            <HandUnit unit={unit}>
-            </HandUnit>
-            {/each}
-        </div>
+<div class="battle">   
+    <div class="hand-row">
+        {#each battle.foe.hand as card, index }
+        <HandCard card={card} index={index} isPlayer={false}>
+        </HandCard>
+        {/each}
+    </div>
+    <div class="board" style="height:{CELL_HEIGHT * REGION_LINES + LINE_PADDING + 2*60 + 10}px;">        
         <div class="tower-row">
             {#each battle.foe.towers as tower }
             <Tower tower={tower} cellWidth={CELL_WIDTH} cellHeight={CELL_HEIGHT} regionPadding={REGION_PADDING} linePadding={LINE_PADDING}>
@@ -102,6 +97,7 @@
             <div class="initiative-coin"
                  on:click={() => State.passRound()}
                 style="top:{playerHasInit ? 3 * CELL_HEIGHT - 5 : CELL_HEIGHT}px;">
+                {battle.turn}.{battle.round}
             </div>
             <div class="passed"
                 style="top:{CELL_HEIGHT - 10}px;">
@@ -109,7 +105,9 @@
             </div>
             {#each cells as cell }
                 <div class="cell"
-                     on:click={() => State.clickCell(cell.pos)}
+                    on:dragover={ev => { ev.preventDefault(); }}
+                    on:drop={() => State.clickCell(cell.pos)}
+                    on:click={() => State.clickCell(cell.pos)}
                     style="width: {CELL_WIDTH}px;height: {CELL_HEIGHT}px;top: {cell.y}px;left: {cell.x}px;">
                 </div>
             {/each}
@@ -133,13 +131,13 @@
             <Tower tower={tower} cellWidth={CELL_WIDTH} cellHeight={CELL_HEIGHT} regionPadding={REGION_PADDING} linePadding={LINE_PADDING}>
             </Tower>
             {/each}
-        </div>
-        <div class="hand-row">
-            {#each battle.player.hand as unit (unit.id) }
-            <HandUnit unit={unit}>
-            </HandUnit>
-            {/each}
-        </div>
+        </div>        
+    </div>
+    <div class="hand-row">
+        {#each battle.player.hand as card, index }
+        <HandCard card={card} index={index} isPlayer={true}>
+        </HandCard>
+        {/each}
     </div>
 </div>
 

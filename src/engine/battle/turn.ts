@@ -1,6 +1,7 @@
 import { GameState } from "../game";
 import { damageUnit, healUnit, Unit } from "./unit";
 import { playAiRound } from "./ai";
+import { getTemplate } from "./card";
 
 export function nextTurn(gs : GameState) {
     console.log("nextTurn");    
@@ -49,13 +50,14 @@ function isActionLeftForPlayer(gs : GameState) : boolean {
             maxGold = t.gold;
         }
     });
-    gs.battle.player.board.forEach(u => {
+    gs.battle.player.board.forEach(u => {        
         if (u.exhausted === false) {
             actionLeft = true;
         }
     });
-    gs.battle.player.hand.forEach(u => {
-        if (u.cost <= maxGold) {
+    gs.battle.player.hand.forEach(c => {
+        const template = getTemplate(c);
+        if (template.cost <= maxGold) {
             actionLeft = true;
         }
     });

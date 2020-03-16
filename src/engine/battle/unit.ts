@@ -1,7 +1,7 @@
 import { Ability, newAbility, TriggerType } from "./ability";
 import { GameState } from "../game";
-import { onDamageUnit, onMoveUnit, onUnitDeath } from "./listeners";
-import { BoardPosition, isPosOnCurrentPlayerSide } from "./board";
+import { onDamageUnit, onMoveUnit, onUnitDeath, onSummonUnit } from "./listeners";
+import { BoardPosition, isPosOnCurrentPlayerSide, REGION_LINES } from "./board";
 import { nextRound } from "./turn";
 
 export interface Unit {
@@ -77,6 +77,41 @@ export function newUnit(template : Unit) : Unit {
     }
 }
 
+export function summonUnit(gs : GameState, template : Unit, pos : BoardPosition, owned : boolean) {        
+    if (owned && !isPosOnCurrentPlayerSide(gs, pos)) {
+        console.log("Can't summon on opponent's board");        
+        return;
+    }
+    const unit = newUnit(template);
+    unit.owned = owned;
+    unit.pos = pos;
+    unit.exhausted = true;
+    if (owned) {
+        gs.battle.player.board.push(unit);
+    } else {
+        gs.battle.foe.board.push(unit);
+    }
+    onSummonUnit(gs, unit, pos, owned);
+}
+
+export function moveUnit(gs : GameState, unit : Unit, pos : BoardPosition) {
+    if (isCurrentPlayerUnit(gs, unit) === false ||
+        isPosOnCurrentPlayerSide(gs, pos) === false ||
+        unit.pos.region !== pos.region && !unit.travel ||
+        unit.exhausted
+        ) {
+        console.log("can't move here", unit, pos);        
+        return false;
+    }
+
+    unit.pos = pos;
+    unit.exhausted = true;
+
+    onMoveUnit(gs, unit, pos);
+
+    nextRound(gs, false);
+}
+
 export function damageUnit(gs : GameState, unit : Unit, damage : number, isCombatDamage : boolean) {    
     onDamageUnit(gs, unit, damage, isCombatDamage);
 
@@ -106,25 +141,6 @@ export function stunUnit(gs : GameState, unit : Unit, value : number) {
 
 export function isCurrentPlayerUnit(gs : GameState, unit : Unit) : boolean {
     return gs.battle.playersRound && unit.owned || !gs.battle.playersRound && !unit.owned;
-}
-
-export function moveUnit(gs : GameState, unit : Unit, pos : BoardPosition) {
-
-    if (isCurrentPlayerUnit(gs, unit) === false ||
-        isPosOnCurrentPlayerSide(gs, pos) === false ||
-        unit.pos.region !== pos.region && !unit.travel ||
-        unit.exhausted
-        ) {
-        console.log("can't move here", unit, pos);        
-        return false;
-    }
-
-    unit.pos = pos;
-    unit.exhausted = true;
-
-    onMoveUnit(gs, unit, pos);
-
-    nextRound(gs, false);
 }
 
 export function destroyUnit(gs : GameState, unit : Unit) {

@@ -3,10 +3,11 @@ import { GameState, initGameState } from "./engine/game";
 import { handleKeyPress } from "./keybinds";
 import { Screen, FullState } from "./ui/model";
 import { activateAbility } from "./ui/game/battle/ability";
-import { clickBoardUnit, clickHandUnit } from "./ui/game/battle/unit";
+import { clickBoardUnit } from "./ui/game/battle/unit";
 import { clickCell } from "./ui/game/battle/board";
 import { pass } from "./engine/battle/turn";
 import { clickTower } from "./ui/game/battle/tower";
+import { clickHandCard } from "./ui/game/battle/hand";
 
 export const State = createFullState();
 
@@ -26,7 +27,7 @@ function createFullState() {
         passRound: () => update(s => { pass(s.game, true); return s; }),
         activateAbility: (unit, ability) => update(s => { activateAbility(s.game, s.ui, unit, ability); return s; }),
         clickBoardUnit: (unit) => update(s => { clickBoardUnit(s.game, s.ui, unit); return s; }),
-        clickHandUnit: (unit) => update(s => { clickHandUnit(s.game, s.ui, unit); return s; }),
+        clickHandCard: (card, index, isPlayer) => update(s => { clickHandCard(s.game, s.ui, card, index, isPlayer); return s; }),
         clickCell: (pos) => update(s => { clickCell(s.game, s.ui, pos); return s; }),
         clickTower: (tower) => update(s => { clickTower(s.game, s.ui, tower); return s; }),
     };

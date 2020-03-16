@@ -46,6 +46,10 @@ export function onMoveUnit(gs : GameState, unit : Unit, pos : BoardPosition) {
     triggerAbilities(gs, TriggerType.BeforeMove, unit, pos);
 }
 
+export function onSummonUnit(gs : GameState, unit : Unit, pos : BoardPosition, owned : boolean) {
+    triggerAbilities(gs, TriggerType.OnSummon, unit, pos);
+}
+
 export function onUnitDeath(gs : GameState, unit : Unit) {
     triggerAbilities(gs, TriggerType.AfterDeath, unit);
 }

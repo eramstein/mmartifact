@@ -32,6 +32,7 @@ export enum TriggerType {
     AfterCombat = "AFTER_COMBAT",
     BeforeMove = "BEFORE_MOVE",
     AfterDeath = "AFTER_DEATH",
+    OnSummon = "ON_SUMMON",
 }
 
 export enum TargetType {

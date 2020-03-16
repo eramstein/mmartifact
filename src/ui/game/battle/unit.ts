@@ -17,16 +17,13 @@ export function clickBoardUnit(gs : GameState, ui : UI, unit : Unit) {
     }    
 }
 
-export function clickHandUnit(gs : GameState, ui : UI, unit : Unit) {    
-    console.log("Clicked unit", unit);    
-}
-
 function selectUnit(gs : GameState, ui : UI, unit : Unit) {
     if (ui.selectedUnit && ui.selectedUnit.id === unit.id) {
         ui.selectedUnit = null;
     } else {
         ui.selectedUnit = unit;
-    }    
+    }
+    ui.selectedHandCard = null;
 }
 
 function targetUnit(gs : GameState, ui : UI, unit : Unit) {
