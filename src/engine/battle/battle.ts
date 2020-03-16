@@ -5,7 +5,7 @@ import { Tower, TOWER_HP, TOWER_GOLD_INIT, initTowers } from "./tower";
 import { Card, CardType } from "./card";
 import { initPlayerDeck, initFoeDeck } from "./init";
 
-const INIT_HAND_SIZE = 7;
+const INIT_HAND_SIZE = 4;
 
 export interface BattleState {
     turn: number,

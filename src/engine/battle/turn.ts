@@ -1,7 +1,9 @@
 import { GameState } from "../game";
 import { damageUnit, healUnit, Unit } from "./unit";
 import { playAiRound } from "./ai";
-import { getTemplate } from "./card";
+import { getTemplate, Card } from "./card";
+
+export const CARDS_DRAW_PER_TURN = 3;
 
 export function nextTurn(gs : GameState) {
     console.log("nextTurn");    
@@ -14,6 +16,7 @@ export function nextTurn(gs : GameState) {
 
     applyTurnEffects(gs);
     resetTurnEffects(gs);
+    drawCards(gs);
 
 }
 
@@ -133,4 +136,21 @@ function updateTempEffects(unit : Unit, endOfRound : boolean) {
         unit.endOfTurn.damageShield = 0;
         unit.exhausted = false;
     }    
+}
+
+function drawCards(gs : GameState) {
+    if (gs.battle.player.deck.length <= gs.battle.player.hand.length) {
+        gs.battle.player.hand = gs.battle.player.hand.concat(gs.battle.player.deck);
+        gs.battle.player.deck = [];        
+    } else {
+        gs.battle.player.hand = gs.battle.player.hand.concat(gs.battle.player.deck.slice(0, CARDS_DRAW_PER_TURN));
+        gs.battle.player.deck = gs.battle.player.deck.slice(CARDS_DRAW_PER_TURN);
+    }
+    if (gs.battle.foe.deck.length <= gs.battle.foe.hand.length) {
+        gs.battle.foe.hand = gs.battle.foe.hand.concat(gs.battle.foe.deck);
+        gs.battle.foe.deck = [];        
+    } else {
+        gs.battle.foe.hand = gs.battle.foe.hand.concat(gs.battle.foe.deck.slice(0, CARDS_DRAW_PER_TURN));
+        gs.battle.foe.deck = gs.battle.foe.deck.slice(CARDS_DRAW_PER_TURN);
+    }
 }
