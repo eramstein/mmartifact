@@ -18,8 +18,9 @@ export interface Card {
 }
 
 export function playCard(gs : GameState, index : number, pos : BoardPosition) {
-    const card = gs.battle.player.hand[index];
-    const tower = gs.battle.player.towers[pos.region];
+    const player = gs.battle.playersRound ? gs.battle.player : gs.battle.foe;
+    const card = player.hand[index];
+    const tower = player.towers[pos.region];
     const template = getTemplate(card);
 
     // pay cost
@@ -38,8 +39,7 @@ export function playCard(gs : GameState, index : number, pos : BoardPosition) {
     }
 
     // remove card from hand
-    const hand = gs.battle.playersRound ? gs.battle.player.hand : gs.battle.foe.hand;
-    hand.splice(index, 1);
+    player.hand.splice(index, 1);
 
     // pass priority
     nextRound(gs, false);

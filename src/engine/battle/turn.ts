@@ -1,7 +1,8 @@
 import { GameState } from "../game";
 import { damageUnit, healUnit, Unit } from "./unit";
-import { playAiRound } from "./ai";
+import { playAiRound, OpenAction, ActionType, OpenActionType } from "./ai/ai";
 import { getTemplate, Card } from "./card";
+import { getEmptyPosCountInRegion } from "./board";
 
 export const CARDS_DRAW_PER_TURN = 3;
 
@@ -33,10 +34,10 @@ export function nextRound(gs : GameState, passed : boolean) {
     resetRoundBonuses(gs);
 
     gs.battle.round++;
-    gs.battle.playersRound = !gs.battle.playersRound;    
+    gs.battle.playersRound = !gs.battle.playersRound;
     
     if (gs.battle.playersRound) {
-        if (isActionLeftForPlayer(gs) === false) {
+        if (isActionLeft(gs, true).length === 0) {
             pass(gs, true);
         }        
     } else {
@@ -45,27 +46,27 @@ export function nextRound(gs : GameState, passed : boolean) {
 }
 
 
-function isActionLeftForPlayer(gs : GameState) : boolean {
-    let actionLeft = false;
-    let maxGold = 0;
-    gs.battle.player.towers.forEach(t => {
-        if (t.gold > maxGold) {
+export function isActionLeft(gs : GameState, isPlayer : boolean) : OpenAction[] {
+    const openActions = [];
+    const player = isPlayer ? gs.battle.player : gs.battle.foe;
+    let maxGold = -1;
+    player.towers.forEach(t => {
+        if (t.gold > maxGold && (isPlayer || getEmptyPosCountInRegion(gs, t.pos, false) > 0)) {
             maxGold = t.gold;
         }
     });
-    gs.battle.player.board.forEach(u => {        
+    player.board.forEach(u => {        
         if (u.exhausted === false) {
-            actionLeft = true;
+            openActions.push({ type: OpenActionType.Unit, entity: u });
         }
     });
-    gs.battle.player.hand.forEach(c => {
+    player.hand.forEach((c, i) => {
         const template = getTemplate(c);
         if (template.cost <= maxGold) {
-            actionLeft = true;
+            openActions.push({ type: OpenActionType.PlayCard, entity: i });
         }
-    });
-    
-    return actionLeft;
+    });    
+    return openActions;
 }
 
 export function pass(gs : GameState, isPlayer : boolean) {

@@ -105,7 +105,7 @@
             </div>
             {#each cells as cell }
                 <div class="cell"
-                    on:dragover={ev => { ev.preventDefault(); }}
+                    on:dragover={ev => { ev.preventDefault() }}
                     on:drop={() => State.clickCell(cell.pos)}
                     on:click={() => State.clickCell(cell.pos)}
                     style="width: {CELL_WIDTH}px;height: {CELL_HEIGHT}px;top: {cell.y}px;left: {cell.x}px;">

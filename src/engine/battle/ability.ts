@@ -75,7 +75,7 @@ export function playAbility(gs : GameState, unit : Unit, ability : Ability, targ
 
     // NEXT ROUND
     // ----------------------------------------------------------------------
-    if (!ability.fast) {
+    if (!ability.fast) {        
         nextRound(gs, false);
     }
     

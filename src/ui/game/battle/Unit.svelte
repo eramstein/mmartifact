@@ -106,9 +106,12 @@
     }
 </style>
 
-<div class="unit" style="
-    background-color: {unit.exhausted ? '#ddd' : '#f9f9f9'};
-    border-color: {selected ? 'blue' : '#ccc'};
+<div class="unit"
+    draggable="true"
+    on:dragstart={ev => { State.clickBoardUnit(unit) }}
+    style="
+        background-color: {unit.exhausted ? '#ddd' : '#f9f9f9'};
+        border-color: {selected ? 'blue' : '#ccc'};
     ">
     <div class="unit-inner" on:click={() => State.clickBoardUnit(unit)}>
         <div class="name">

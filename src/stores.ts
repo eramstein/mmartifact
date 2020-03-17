@@ -12,7 +12,7 @@ import { clickHandCard } from "./ui/game/battle/hand";
 export const State = createFullState();
 
 function createFullState() {
-    const initialState = getNewState();
+    const initialState = loadState();
 
     const { subscribe, set, update } = writable(initialState);
 
@@ -24,7 +24,7 @@ function createFullState() {
         load: data => set(data),
         tempTest: () => update(s => { return s; }),
 
-        passRound: () => update(s => { pass(s.game, true); return s; }),
+        passRound: () => update(s => { s.ui.selectedUnit = null; s.ui.selectedHandCard = null; pass(s.game, true); return s; }),
         activateAbility: (unit, ability) => update(s => { activateAbility(s.game, s.ui, unit, ability); return s; }),
         clickBoardUnit: (unit) => update(s => { clickBoardUnit(s.game, s.ui, unit); return s; }),
         clickHandCard: (card, index, isPlayer) => update(s => { clickHandCard(s.game, s.ui, card, index, isPlayer); return s; }),
@@ -43,54 +43,24 @@ function getNewState(): FullState {
             abilityPending: null,
             targetSelectionMode: null,
             selectedUnit: null,
+            selectedHandCard: null,
         },
     };
 }
 
-let db;
-const request = window.indexedDB.open("horde", 1);
-request.onerror = function (event) {
-    console.log('The database failed to open');
-};
-request.onsuccess = function (event) {    
-    db = request.result;
-    loadState(); 
-};
-request.onupgradeneeded = function(event) {
-    db = request.result;
-    db.createObjectStore('state', { keyPath: 'id' });
+export function loadState(): FullState {
+    const savedData = localStorage.getItem("mmartifact") || "nope"
+    if (!savedData || savedData === "undefined" || savedData === "nope") {
+      return getNewState()
+    } else {
+      const parsedData = JSON.parse(savedData)
+      return parsedData
+    }
 }
-
-function loadState() {
-    const transaction = db.transaction(['state']);
-    const objectStore = transaction.objectStore('state');
-    let request = objectStore.get(1);
-
-    request.onerror = function(event) {
-        console.log('Failure while loading data', event.target);
-    };
-
-    request.onsuccess = function(event) {
-        if (request.result) {            
-            State.load(request.result.state);   
-        } else {
-          console.log('No data record');
-        }
-    };
-}
-
+  
 export function saveState() {
     const savedData = get(State);
-
-    const request = db.transaction(['state'], 'readwrite')
-        .objectStore('state')
-        .put({ id: 1, state: savedData });
-    request.onerror = function (event) {
-        console.log('Failure while saving data', event.target);
-    }
-    request.onsuccess = function(event) {
-        console.log("Data saved");
-    };
+    localStorage.setItem("mmartifact", JSON.stringify(savedData))
 }
 
 export function printState() {

@@ -77,20 +77,29 @@ export function newUnit(template : Unit) : Unit {
     }
 }
 
-export function summonUnit(gs : GameState, template : Unit, pos : BoardPosition, owned : boolean) {        
+export function summonUnit(gs : GameState, template : Unit, pos : BoardPosition, owned : boolean) {
+    const board = owned ? gs.battle.player.board : gs.battle.foe.board;
+
+    // check if pos is valid
     if (owned && !isPosOnCurrentPlayerSide(gs, pos)) {
         console.log("Can't summon on opponent's board");        
         return;
     }
+    board.forEach(u => {
+        if (u.pos === pos) {
+            console.log("Can't summon on this pos, already occupied", pos, u);        
+            return;
+        }
+    });
+
+    // add unit to board
     const unit = newUnit(template);
     unit.owned = owned;
     unit.pos = pos;
     unit.exhausted = true;
-    if (owned) {
-        gs.battle.player.board.push(unit);
-    } else {
-        gs.battle.foe.board.push(unit);
-    }
+    board.push(unit);
+
+    // listeners
     onSummonUnit(gs, unit, pos, owned);
 }
 
@@ -187,4 +196,8 @@ export function transformUnit(gs : GameState, fromUnit : Unit, toUnit : Unit) {
     });
 
     units[fromIndex] = newUnit;
+}
+
+export function canUnitAttack(gs : GameState, unit : Unit) : boolean {        
+    return true;
 }

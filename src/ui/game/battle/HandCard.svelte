@@ -8,11 +8,6 @@
 
     $: selected = isPlayer && $State.ui.selectedHandCard && $State.ui.selectedHandCard.index === index;
 
-    function handleDragStart(e) {
-        console.log(e);        
-        State.clickHandCard(card, index, isPlayer);
-    }
-
 </script>
 
 <style>
@@ -29,7 +24,7 @@
 
 <div class="hand-card"
     draggable="true"
-    on:dragstart={handleDragStart}
+    on:dragstart={() => State.clickHandCard(card, index, isPlayer)}
     style="border-color: {selected ? 'blue' : '#ccc'};"
     on:click={() => State.clickHandCard(card, index, isPlayer)}
 >
