@@ -4,6 +4,7 @@
     import { State } from '../../../stores';
     import { DELAYS } from './config';
     import { REGION_COUNT, REGION_LINES, REGION_COLUMNS } from '../../../engine/battle/board';
+    import { AiLogType } from '../../../engine/battle/ai/ai';
     import Unit from './Unit.svelte';
     import HandCard from './HandCard.svelte';
     import Tower from './Tower.svelte';
@@ -13,6 +14,8 @@
     $: playerHasInit = battle.playersRound;
     $: units = battle.foe.board.concat(battle.player.board);
     $: passed = battle.foePassed ? 'passed' : '';
+
+    let aiUnitsLogs = {};
 
     let CELL_WIDTH = 125;
     let CELL_HEIGHT = 180;
@@ -30,6 +33,39 @@
                 });
             }
         }
+    }
+
+    $: {
+        if (battle.aiLog.length > 0) {
+            console.log(battle.aiLog);
+            
+            console.log("log to show");
+            console.log(aiUnitsLogs);
+
+            battle.aiLog.forEach(log => {
+                aiUnitsLogs[log.entity.id] = log;                
+            }); 
+                        
+            setTimeout(() => {
+                console.log("hide it");
+                aiUnitsLogs = {};
+                State.clearLog();
+            }, 500);
+        }
+    }
+
+    function animateAction(unit) {        
+        if (unit.owned || !aiUnitsLogs[unit.id]) {
+            return 0;
+        }
+        const log = aiUnitsLogs[unit.id];        
+        if (log.type === AiLogType.AttackTower) {
+            return LINE_PADDING + CELL_HEIGHT * (3 - unit.pos.line) + 20;
+        }
+        if (log.type === AiLogType.AttackUnit) {
+            return LINE_PADDING + (log.target.pos.line - unit.pos.line - 1) * CELL_HEIGHT + 20;
+        }
+        return 0;
     }
 
 </script>
@@ -118,10 +154,10 @@
                     transition: 750ms ease-in-out;
                     width: {CELL_WIDTH}px;
                     height: {CELL_HEIGHT}px;
-                    top: {unit.pos.line * CELL_HEIGHT + (unit.pos.line >= REGION_LINES/2 ? LINE_PADDING : 0)}px;
+                    top: {animateAction(unit) + unit.pos.line * CELL_HEIGHT + (unit.pos.line >= REGION_LINES/2 ? LINE_PADDING : 0)}px;
                     left: {unit.pos.region * REGION_COLUMNS * CELL_WIDTH + unit.pos.region * REGION_PADDING + unit.pos.column * CELL_WIDTH}px;"
                 >
-                <Unit unit={unit} abilityPending={abilityPending}>
+                <Unit unit={unit} abilityPending={abilityPending} aiLog={aiUnitsLogs[unit.id]}>
                 </Unit>
             </div>
             {/each}

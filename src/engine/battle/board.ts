@@ -50,8 +50,8 @@ export function getEmptyPosInRegion(gs : GameState, region : number, isPlayer : 
 }
 
 export function getEmptyPosCountInRegion(gs : GameState, region : number, isPlayer : boolean) : number {
-    const board = isPlayer ? gs.battle.player.board : gs.battle.foe.board;    
-    return REGION_LINES / 2 * REGION_COLUMNS - board.length;
+    const board = isPlayer ? gs.battle.player.board : gs.battle.foe.board;
+    return REGION_LINES / 2 * REGION_COLUMNS - board.filter(u => u.pos.region === region).length;
 }
 
 export function getUnitAtPosition(gs : GameState, pos : BoardPosition) : Unit {

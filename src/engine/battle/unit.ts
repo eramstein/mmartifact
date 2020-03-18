@@ -1,7 +1,7 @@
-import { Ability, newAbility, TriggerType } from "./ability";
+import { Ability, newAbility } from "./ability";
 import { GameState } from "../game";
 import { onDamageUnit, onMoveUnit, onUnitDeath, onSummonUnit } from "./listeners";
-import { BoardPosition, isPosOnCurrentPlayerSide, REGION_LINES } from "./board";
+import { BoardPosition, isPosOnCurrentPlayerSide } from "./board";
 import { nextRound } from "./turn";
 
 export interface Unit {

@@ -1,36 +1,8 @@
-import { Unit, newUnit } from "./unit";
-import { DataUnits } from "../../data/units";
-import { REGION_COLUMNS, REGION_LINES } from "./board";
-import { Tower, TOWER_HP, TOWER_GOLD_INIT, initTowers } from "./tower";
-import { Card, CardType } from "./card";
+import { initTowers } from "./tower";
 import { initPlayerDeck, initFoeDeck } from "./init";
+import { BattleState, WinState } from "./model";
 
 const INIT_HAND_SIZE = 4;
-
-export interface BattleState {
-    turn: number,
-    round: number,
-    playersRound: boolean,
-    playerPassed: boolean,
-    foePassed: boolean,
-    player: PlayerState,
-    foe: PlayerState,
-    winState: WinState,
-}
-
-export interface PlayerState {
-    board: Unit[],
-    hand: Card[],
-    deck: Card[],
-    graveyard: Card[],
-    towers: Tower[],
-}
-
-export enum WinState {
-    Playing = "PLAYING",
-    Won = "WON",
-    Lost = "LOST",
-}
 
 export function initBattleState() : BattleState {
     const playerDeck = initPlayerDeck.slice(INIT_HAND_SIZE);
@@ -59,5 +31,6 @@ export function initBattleState() : BattleState {
             towers: initTowers(false),
         },
         winState: WinState.Playing,
+        aiLog: [],
     }
 }

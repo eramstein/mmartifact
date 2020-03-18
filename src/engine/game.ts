@@ -1,4 +1,5 @@
-import { BattleState, initBattleState } from "./battle/battle";
+import { initBattleState } from "./battle/battle";
+import { BattleState } from "./battle/model";
 import { nextTurn } from "./battle/turn";
 
 export interface GameState {

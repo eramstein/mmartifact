@@ -25,6 +25,17 @@ export interface OpenAction {
     entity: any,
 }
 
+export enum AiLogType {
+    AttackTower = "ATTACK_TOWER",
+    AttackUnit = "ATTACK_UNIT",
+}
+
+export interface AiLog {
+    type: AiLogType,
+    entity: any,
+    target: any,
+}
+
 export function playAiAbility(gs : GameState, unit : Unit, ability : Ability) {    
     let targets : Unit[] = [];
 
@@ -62,4 +73,9 @@ export function playAiRound(gs : GameState) {
         nextRound(gs, true);
         return;
     }
+}
+
+
+export function clearLog(gs : GameState) {
+    gs.battle.aiLog = [];
 }

@@ -1,5 +1,5 @@
 import { GameState } from "../game";
-import { WinState } from "./battle";
+import { WinState } from "./model";
 
 export interface Tower {
     isPlayer: boolean,

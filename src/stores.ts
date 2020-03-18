@@ -8,6 +8,7 @@ import { clickCell } from "./ui/game/battle/board";
 import { pass } from "./engine/battle/turn";
 import { clickTower } from "./ui/game/battle/tower";
 import { clickHandCard } from "./ui/game/battle/hand";
+import { clearLog } from "./engine/battle/ai/ai";
 
 export const State = createFullState();
 
@@ -30,6 +31,7 @@ function createFullState() {
         clickHandCard: (card, index, isPlayer) => update(s => { clickHandCard(s.game, s.ui, card, index, isPlayer); return s; }),
         clickCell: (pos) => update(s => { clickCell(s.game, s.ui, pos); return s; }),
         clickTower: (tower) => update(s => { clickTower(s.game, s.ui, tower); return s; }),
+        clearLog: () => update(s => { clearLog(s.game); return s; }),
     };
 }
 

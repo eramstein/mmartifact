@@ -1,5 +1,5 @@
 import { GameState } from "../../game";
-import { OpenAction, OpenActionType, ActionType } from "./ai";
+import { OpenAction, OpenActionType, ActionType, AiLogType } from "./ai";
 import { pickFrom } from "../../../utils/random";
 import { getTemplate, playCard, CardType } from "../card";
 import { Unit, canUnitAttack, moveUnit } from "../unit";
@@ -66,10 +66,13 @@ function useUnit(gs : GameState, action : OpenAction) {
         const blocker = getBlocker(gs, unit);
         if (blocker) {
             console.log(unit, "attacks", blocker);
+            gs.battle.aiLog.push({ type: AiLogType.AttackUnit, entity: unit, target: blocker });
             combat(gs, unit, blocker);
         } else {
             console.log(unit, "attacks tower");
-            attackTower(gs, unit, gs.battle.player.towers[unit.pos.region]);
+            const tower = gs.battle.player.towers[unit.pos.region];
+            gs.battle.aiLog.push({ type: AiLogType.AttackTower, entity: unit, target: tower });
+            attackTower(gs, unit, tower);
         }
     }
 
